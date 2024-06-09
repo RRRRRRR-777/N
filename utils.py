@@ -58,7 +58,7 @@ class InitProcess:
         # ChromeDriver でよく使うオプションのチートシート https://qiita.com/kawagoe6884/items/cea239681bdcffe31828
         dt_now = datetime.datetime.now()
         date = dt_now.strftime('%y%m%d')
-        downloadDir = os.getcwd() + f"/Stock_Trade/StockData" + date
+        downloadDir = os.getcwd() + f"/StockData" + date
         options.add_experimental_option(
             "prefs", {"download.default_directory": downloadDir})  # ファイルの保存先を指定
         options.add_argument('--headless')  # ヘッドレスモードでブラウザを起動
@@ -97,19 +97,19 @@ class InitProcess:
         dt_now = datetime.datetime.now()
         date = dt_now.strftime('%y%m%d')
         # 個別銘柄のデータの保存先
-        csv_downloadDir = os.getcwd() + f"/Stock_Trade/StockData" + date
+        csv_downloadDir = os.getcwd() + f"/StockData" + date
         try:
             p = glob.glob(
-                os.getcwd() + f"/Stock_Trade/StockData*", recursive=True)[0]
+                os.getcwd() + f"/StockData*", recursive=True)[0]
             shutil.rmtree(p)
             self.logger.info(f"remove {p}")
         except:
             pass
         os.mkdir(csv_downloadDir)
         # CSVデータの保存先
-        stock_downloadDir = os.getcwd() + f"/Stock_Trade/CsvData" + date
+        stock_downloadDir = os.getcwd() + f"/CsvData" + date
         try:
-            p = glob.glob(os.getcwd() + f"/Stock_Trade/CsvData*",
+            p = glob.glob(os.getcwd() + f"/CsvData*",
                           recursive=True)[0]
             shutil.rmtree(p)
             self.logger.info(f"remove {p}")
@@ -135,7 +135,7 @@ class PickFinviz:
         num = 100
         # ファイル名
         out_path = os.path.join(glob.glob(
-            os.getcwd()+"/Stock_Trade/StockData*", recursive=True)[0], "input.txt")
+            os.getcwd()+"/StockData*", recursive=True)[0], "input.txt")
 
         with open(out_path, "w", encoding="utf-8") as file:
             # 1ページごとでループする
@@ -171,10 +171,10 @@ class HistData:
         # ヒストリカルデータの保存先
         dt_now = datetime.datetime.now()
         date = dt_now.strftime('%y%m%d')
-        downloadDir = os.getcwd() + f"/Stock_Trade/StockData" + date
+        downloadDir = os.getcwd() + f"/StockData" + date
         # 銘柄データの保存先
         stocksDir = glob.glob(
-            os.getcwd() + f"/Stock_Trade/StockData*/input.txt", recursive=True)[0]
+            os.getcwd() + f"/StockData*/input.txt", recursive=True)[0]
 
         # 銘柄の箱
         symbol = np.full((5000), 0, dtype=object)
@@ -232,6 +232,8 @@ class HistData:
 """
 IXICのヒストリカルデータの列を増やす
 """
+
+
 class ProcessNASDAQ:
     def __init__(self, logger):
         self.logger = logger
@@ -239,7 +241,7 @@ class ProcessNASDAQ:
     def execute(self):
         # IXICのCSVを読み込む
         IXICdir = glob.glob(
-            os.getcwd() + f"/Stock_Trade/StockData*/^IXIC.csv", recursive=True)[0]
+            os.getcwd() + f"/StockData*/^IXIC.csv", recursive=True)[0]
         df = pd.read_csv(IXICdir)
 
         # 追加する列
@@ -328,6 +330,8 @@ class ProcessNASDAQ:
 """
 個別株のヒストリカルデータの列を増やす
 """
+
+
 class ProcessHistData:
     def __init__(self, logger):
         self.logger = logger
@@ -335,16 +339,16 @@ class ProcessHistData:
     def execute(self):
         # IXICのCSVを読み込む
         IXICdir = glob.glob(
-            os.getcwd() + f"/Stock_Trade/StockData*/^IXIC.csv", recursive=True)[0]
+            os.getcwd() + f"/StockData*/^IXIC.csv", recursive=True)[0]
         dfIXIC = pd.read_csv(IXICdir)
         # 各企業のヒストリカルデータを読み込む
         cnt = 0
         files = glob.glob(
-            os.getcwd() + "/Stock_Trade/StockData*/*.csv", recursive=True)
+            os.getcwd() + "/StockData*/*.csv", recursive=True)
         # Comprehensiveのファイルを除く
         try:
             compdir = os.path.join(
-                glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "Comprehensive.csv")
+                glob.glob(os.getcwd()+"/CsvData*")[0], "Comprehensive.csv")
             files.remove(compdir)
         except:
             pass
@@ -353,7 +357,7 @@ class ProcessHistData:
             # 入力CSV
             df = pd.read_csv(file)
             s = re.sub(os.getcwd() +
-                       r"/Stock_Trade/StockData[0-9]{6}/|.csv", "", file)
+                       r"/StockData[0-9]{6}/|.csv", "", file)
 
             # 'IXIC Total'列が複数結合されるのを防ぐため(本実装時には何度も当ファイルを実行されることが無いため当コードは不要と思う)
             if not '^IXIC Total' in df.columns:
@@ -553,11 +557,14 @@ class ProcessHistData:
 """
 RSを計算する
 """
+
+
 class CalculateRS:
     # 関数の定義
     def __init__(self, logger):
         self.logger = logger
     # RSの素点を計算する関数
+
     def period_perf(self, data, n):
         i = n
         # 現在の四半期の取引日数
@@ -600,22 +607,22 @@ class CalculateRS:
         # ディレクトリの定義
         # input.txtのディレクトリ
         inputDir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/StockData*")[0], "input.txt")
+            glob.glob(os.getcwd()+"/StockData*")[0], "input.txt")
         # 個別株の終値データ
         stock_dir = glob.glob(
-            os.getcwd()+"/Stock_Trade/StockData*/*.csv", recursive=True)
+            os.getcwd()+"/StockData*/*.csv", recursive=True)
         IXICdir = glob.glob(os.getcwd(
-        ) + f"/Stock_Trade/StockData*/^IXIC.csv", recursive=True)[0]  # IXICのファイルを除く
+        ) + f"/StockData*/^IXIC.csv", recursive=True)[0]  # IXICのファイルを除く
         stock_dir.remove(IXICdir)
         try:
             compdir = os.path.join(glob.glob(os.getcwd(
-            )+"/Stock_Trade/CsvData*")[0], "Comprehensive.csv")  # Comprehensiveのファイルを除く
+            )+"/CsvData*")[0], "Comprehensive.csv")  # Comprehensiveのファイルを除く
             stock_dir.remove(compdir)
         except:
             pass
         # 出力先のディレクトリ
         outputDir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "Comprehensive.csv")
+            glob.glob(os.getcwd()+"/CsvData*")[0], "Comprehensive.csv")
 
         # テキストファイルをDataFrameに変換する
         data = []
@@ -642,7 +649,7 @@ class CalculateRS:
         for i, stock_path in enumerate(stock_dir):
             stock_data = pd.read_csv(stock_path)  # 銘柄を一つ選択
             ticker = re.sub(os.getcwd(
-            ) + r"/Stock_Trade/StockData[0-9]{6}/|.csv", "", stock_path)  # ティッカーコードを抽出
+            ) + r"/StockData[0-9]{6}/|.csv", "", stock_path)  # ティッカーコードを抽出
 
             # RSの素点を作成
             stock = stock_data['Adj Close']
@@ -671,13 +678,15 @@ class CalculateRS:
 """
 BuyingStock.csvを出力する
 """
+
+
 class BuyingStock:
     def __init__(self, logger):
         self.logger = logger
 
     def execute(self):
         input_dir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "Comprehensive.csv")
+            glob.glob(os.getcwd()+"/CsvData*")[0], "Comprehensive.csv")
         input_df = pd.read_csv(input_dir)
         data = []
         for i in range(0, len(input_df)):
@@ -689,19 +698,22 @@ class BuyingStock:
 
         df = pd.DataFrame(data)
         outputDir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "BuyingStock.csv")
+            glob.glob(os.getcwd()+"/CsvData*")[0], "BuyingStock.csv")
         df.to_csv(outputDir, index=False)
 
 
 """
 CとAを取得する
 """
+
+
 class CurrentAnnual:
     # 関数の定義
     def __init__(self, logger, driver):
         self.logger = logger
         self.driver = driver
     # XPATH要素の値を取得する
+
     def get_element(self, base_element, num):
         ''' args
         base_element: 欲しい要素のベースになるxpath
@@ -720,7 +732,7 @@ class CurrentAnnual:
     # アナリスト情報を取得
     def analysts_info(self, ticker_code):
         try:
-            load_dotenv() # .envファイルから値を読み込む
+            load_dotenv()  # .envファイルから値を読み込む
             base_url = os.getenv('analysts_url')
             url = base_url + f"{ticker_code}/analysis"
             headers = {
@@ -742,7 +754,7 @@ class CurrentAnnual:
     # 過去の情報を取得
     def previous_info(self, ticker_code):
         # ターゲットのURL
-        load_dotenv() # .envファイルから値を読み込む
+        load_dotenv()  # .envファイルから値を読み込む
         base_url = os.getenv('finance_url')
         url = base_url + f"{ticker_code}"
         try:
@@ -840,7 +852,7 @@ class CurrentAnnual:
     def execute(self):
         # 入力するdfの設定
         stock_dir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "BuyingStock.csv")
+            glob.glob(os.getcwd()+"/CsvData*")[0], "BuyingStock.csv")
         stock_df = pd.read_csv(stock_dir)["Ticker"]
         self.analysts_data = []
         self.previous_data = []
@@ -848,9 +860,9 @@ class CurrentAnnual:
         pd.options.display.float_format = '{:.2f}'.format
         for i, ticker_code in enumerate(stock_df):
             self.analysts_info(ticker_code)
-            time.sleep(2)  # 2秒間待機
+            time.sleep(1)  # 1秒間待機
             self.previous_info(ticker_code)
-            time.sleep(2)  # 2秒間待機
+            time.sleep(1)  # 1秒間待機
             # # 5銘柄ごとに30秒間待機
             # if (i!=0)&(i%3==0):
             #     print(f"sleep ", end="\r")
@@ -885,8 +897,8 @@ class CurrentAnnual:
         df = pd.concat([analysts_df, previous_df], axis=0, ignore_index=True)
 
         outputDir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "TmpCurrentAnnual.csv")
-        # df.to_csv(outputDir, index=False)
+            glob.glob(os.getcwd()+"/CsvData*")[0], "TmpCurrentAnnual.csv")
+        df.to_csv(outputDir, index=False)
         df = pd.read_csv(outputDir)
 
         self.logger.info("Calculating Data")
@@ -998,7 +1010,7 @@ class CurrentAnnual:
         df = pd.merge(df, append_df, on='Ticker', how='inner')
 
         outputDir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "CurrentAnnual.csv")
+            glob.glob(os.getcwd()+"/CsvData*")[0], "CurrentAnnual.csv")
         df.to_csv(outputDir, index=False)
         self.logger.info(f"---Done Process CurrentAnnual (CurrentAnnual)---")
 
@@ -1014,12 +1026,13 @@ class Institutional:
         self.logger = logger
         self.driver = driver
     # 機関投資家数のパフォーマンスを取得する関数
+
     def get_inst_perf(self, i, ticker):
         if '-' in ticker:
             ticker = ticker.replace('-', '.')
         try:
-             # ターゲットのURL
-            load_dotenv() # .envファイルから値を読み込む
+            # ターゲットのURL
+            load_dotenv()  # .envファイルから値を読み込む
             url = os.getenv('institute_url')
             # サイトのホームへ移動
             self.driver.get(url)
@@ -1061,7 +1074,7 @@ class Institutional:
             try:
                 # 該当銘柄の企業名で再度検索する
                 # ターゲットのURL
-                load_dotenv() # .envファイルから値を読み込む
+                load_dotenv()  # .envファイルから値を読み込む
                 url = os.getenv('institute_url')
                 self.driver.get(url)
                 input_search = self.driver.find_element(
@@ -1120,7 +1133,7 @@ class Institutional:
     def process(self):
         # 銘柄のリストを読み込む
         stock_df = pd.read_csv(os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "BuyingStock.csv"))
+            glob.glob(os.getcwd()+"/CsvData*")[0], "BuyingStock.csv"))
         stock_df_ticker = stock_df["Ticker"]
         # リスト型のデータ変数
         self.data = []
@@ -1129,7 +1142,7 @@ class Institutional:
         self.add_error_flg = True
 
         # 対象リンク
-        load_dotenv() # .envファイルから値を読み込む
+        load_dotenv()  # .envファイルから値を読み込む
         base_url = os.getenv('institute_url')
         loggin_url = base_url + "/login"
         # ユーザーネーム
@@ -1140,7 +1153,7 @@ class Institutional:
         # txtファイルを用いて処理の実行を100銘柄づつに分ける
         remove_flg = False
         process_txt_file = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "Institutional.txt")
+            glob.glob(os.getcwd()+"/CsvData*")[0], "Institutional.txt")
         is_file = os.path.isfile(process_txt_file)
 
         if is_file:  # ファイルが存在する場合の処理
@@ -1168,6 +1181,14 @@ class Institutional:
             os.remove(process_txt_file)
 
         # サイトにログインする
+        # TODO ログイン処理時にエラーが発生する
+        """
+        エラーメッセージ
+        urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=55441):
+        Max retries exceeded with url: /session/4ab522c13a3fa49c29ee791db6831ca7/url
+        (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x11f27a310>:
+        Failed to establish a new connection: [Errno 61] Connection refused'))
+        """
         self.driver.get(loggin_url)  # URLを開く
         time.sleep(1.0)
         self.logger.info(self.driver.current_url)
@@ -1183,7 +1204,7 @@ class Institutional:
         self.driver.find_element(By.CLASS_NAME, "login").click()
         time.sleep(5)  # 待機時間
         self.logger.info(self.driver.current_url)
-        load_dotenv() # .envファイルから値を読み込む
+        load_dotenv()  # .envファイルから値を読み込む
         url = os.getenv('institute_url')
         self.driver.get(url)  # URLを開く
         time.sleep(0.5)
@@ -1220,7 +1241,7 @@ class Institutional:
 
             # dfを出力する
             outputDir = os.path.join(
-                glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], f"PerfInst_{start_num}.csv")
+                glob.glob(os.getcwd()+"/CsvData*")[0], f"PerfInst_{start_num}.csv")
             df.to_csv(outputDir, index=False)
         except Exception as e:
             self.logger.warning(e)
@@ -1235,12 +1256,12 @@ class Institutional:
         self.process()
         # ファイルが削除されるまで処理を繰り返す
         path = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "Institutional.txt")
+            glob.glob(os.getcwd()+"/CsvData*")[0], "Institutional.txt")
         while os.path.exists(path):
             self.process()
 
         df_dict = {}
-        df_dir_ = glob.glob(os.getcwd()+"/Stock_Trade/CsvData*/PerfInst_*.csv")
+        df_dir_ = glob.glob(os.getcwd()+"/CsvData*/PerfInst_*.csv")
         df_dir = sorted(df_dir_, key=lambda x: int(
             re.search(r'\d+', x).group()))  # 数値部分を抽出してソート
 
@@ -1249,7 +1270,7 @@ class Institutional:
         combined_df = pd.concat(dfs, ignore_index=True)
 
         outputDir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "PerfInst.csv")
+            glob.glob(os.getcwd()+"/CsvData*")[0], "PerfInst.csv")
         combined_df.to_csv(outputDir, index=False)
 
         # ファイルを削除
@@ -1272,19 +1293,19 @@ class AppendData:
     def execute(self):
         # BuyingStock.csv
         df_dir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "BuyingStock.csv")
+            glob.glob(os.getcwd()+"/CsvData*")[0], "BuyingStock.csv")
         df = pd.read_csv(df_dir)
         # CurrentAnnual.csv
         courrent_annual_df_dir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "CurrentAnnual.csv")
+            glob.glob(os.getcwd()+"/CsvData*")[0], "CurrentAnnual.csv")
         courrent_annual_df = pd.read_csv(courrent_annual_df_dir)
         # PerfInst.csv
         perf_inst_df_dir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "PerfInst.csv")
+            glob.glob(os.getcwd()+"/CsvData*")[0], "PerfInst.csv")
         perf_inst_df = pd.read_csv(perf_inst_df_dir)
         # IXIC.csvとパフォーマンス
         ixic_dir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/StockData*")[0], "^IXIC.csv")
+            glob.glob(os.getcwd()+"/StockData*")[0], "^IXIC.csv")
         ixic_df = pd.read_csv(ixic_dir)
         index_adjclose = ixic_df['Adj Close']
         recent_index_performance = round(
@@ -1370,7 +1391,7 @@ class AppendData:
 
             # インデックスと個別銘柄を比較
             ticker_dir = glob.glob(
-                os.getcwd()+f"/Stock_Trade/StockData*/{ticker_code}.csv")[0]
+                os.getcwd()+f"/StockData*/{ticker_code}.csv")[0]
             ticker_df = pd.read_csv(ticker_dir)
             adjclose = ticker_df["Adj Close"]
 
@@ -1406,6 +1427,8 @@ class AppendData:
 """
 Excelに変換後視覚情報を調整
 """
+
+
 class ConvertExcel:
     def __init__(self, logger):
         self.logger = logger
@@ -1432,6 +1455,8 @@ class ConvertExcel:
 
     # 与えられた日付の配列から1ヶ月以内の日付を判別
     def is_within_one_month(self, date_str):
+        if date_str == "-":
+            return False
         # 月の辞書を定義
         month_dict = {'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
                       'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12}
@@ -1444,6 +1469,8 @@ class ConvertExcel:
         # 与えられた月の値
         month = month_dict.get(date_str[:3])
         # 与えられた日の値
+        date = int(date_str[4:6])
+        match = re.search(r'\d{6}', date_str)
         date = int(date_str[4:6])
         # 与えられた日付
         month_date = datetime.datetime(
@@ -1484,12 +1511,12 @@ class ConvertExcel:
     def execute(self):
         # csvファイルをxlsxファイルに変換
         df_dir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "BuyingStock.csv")
+            glob.glob(os.getcwd()+"/CsvData*")[0], "BuyingStock.csv")
         self.df = pd.read_csv(df_dir)
         self.df.to_excel(os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "BuyingStock.xlsx"))
+            glob.glob(os.getcwd()+"/CsvData*")[0], "BuyingStock.xlsx"))
         df_xlsx_dir = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/CsvData*")[0], "BuyingStock.xlsx")
+            glob.glob(os.getcwd()+"/CsvData*")[0], "BuyingStock.xlsx")
 
         # xlsxファイルを読み込み
         wb = openpyxl.load_workbook(df_xlsx_dir)
@@ -1502,7 +1529,11 @@ class ConvertExcel:
             cell_market_cap = self.ws.cell(row=i+2, column=col_num)
             cell_insider_own = self.ws.cell(row=i+2, column=col_num_2)
             market_cap = self.convert_value(cell_market_cap.value)
-            insider_own = float(cell_insider_own.value.replace("%", ""))
+            try:
+                insider_own = float(cell_insider_own.value.replace("%", ""))
+            except Exception as e:
+                self.logger.warning(e)
+                pass
             if market_cap > 10e+9:  # 大型株を判別
                 if insider_own >= 1:  # 該当している場合は背景を緑色に変更
                     fill_color = PatternFill(
@@ -1917,7 +1948,7 @@ class ConvertExcel:
                     fill_color = PatternFill(
                         fgColor=red_hex_colors[i], bgColor=red_hex_colors[i], fill_type='solid')
                     cell.fill = fill_color
-                    
+
         # Next Annual Revenue
         col_num = self.search_col_num(col_name='Next Annual Revenue')
         green_hex_colors = self.init_heatmap(
@@ -1973,7 +2004,6 @@ class ConvertExcel:
 
         # 不要な列を削除する
         delete_col = []
-        # columns = ['Date', 'P/E', 'FwdP/E', 'No1', 'No4', 'No5', 'No6', '^IXIC Total', 'BuyFlg1', 'BuyFlg2', 'BuyFlg4', 'EMA8', 'SMA10', 'EMA21', 'SMA50', 'SMA200', 'Volume SMA50']
         columns = ['Date', 'No1', 'No4', 'No5', 'No6', '^IXIC Total', 'BuyFlg1', 'BuyFlg2',
                    'BuyFlg4', 'EMA8', 'SMA10', 'EMA21', 'SMA50', 'SMA200', 'Volume SMA50']
         for col in columns:
@@ -1989,11 +2019,11 @@ class ConvertExcel:
         self.ws.cell(row=1, column=31).value = "N"
         self.ws.cell(row=1, column=33).value = "S"
         self.ws.cell(row=1, column=35).value = "L"
-        self.ws.cell(row=1, column=36).value = "I"
-        self.ws.cell(row=1, column=37).value = "Moving Averages"
+        self.ws.cell(row=1, column=37).value = "I"
+        self.ws.cell(row=1, column=38).value = "Moving Averages"
         # 文字を太字にする
         font = Font(size=14, bold=True)
-        bold_list = [15, 23, 31, 33, 35, 36, 37]
+        bold_list = [15, 23, 31, 33, 35, 36, 37, 38]
         for i in range(len(bold_list)):
             cell = self.ws.cell(row=1, column=bold_list[i])
             self.ws[cell.coordinate].font = font
@@ -2002,7 +2032,7 @@ class ConvertExcel:
         # 罫線を引く
         side = Side(style='thick', color='000000')
         border = Border(left=side)
-        border_list = [15, 19, 23, 27, 31, 33, 35, 36, 37, 42]
+        border_list = [15, 19, 23, 27, 31, 33, 35, 37, 38, 42]
         max_row = self.ws.max_row+1
         for i in range(len(border_list)):
             for j in range(2, max_row):
@@ -2013,7 +2043,8 @@ class ConvertExcel:
         self.ws.merge_cells('W1:AD1')
         self.ws.merge_cells('AE1:AF1')
         self.ws.merge_cells('AG1:AH1')
-        self.ws.merge_cells('AK1:AR1')
+        self.ws.merge_cells('AI1:AJ1')
+        self.ws.merge_cells('AL1:AQ1')
         # セルの名称を変更
         self.ws.cell(row=2, column=15).value = "EPS 2期前"
         self.ws.cell(row=2, column=16).value = "収益 2期前"
@@ -2031,12 +2062,12 @@ class ConvertExcel:
         self.ws.cell(row=2, column=28).value = "収益 今年"
         self.ws.cell(row=2, column=29).value = "EPS 来年"
         self.ws.cell(row=2, column=30).value = "収益 来年"
-        self.ws.cell(row=2, column=37).value = "EMA8"
-        self.ws.cell(row=2, column=38).value = "SMA10"
-        self.ws.cell(row=2, column=39).value = "EMA21"
-        self.ws.cell(row=2, column=40).value = "SMA50"
-        self.ws.cell(row=2, column=41).value = "SMA200"
-        self.ws.cell(row=2, column=42).value = "Volume SMA50"
+        self.ws.cell(row=2, column=38).value = "EMA8"
+        self.ws.cell(row=2, column=39).value = "SMA10"
+        self.ws.cell(row=2, column=40).value = "EMA21"
+        self.ws.cell(row=2, column=41).value = "SMA50"
+        self.ws.cell(row=2, column=42).value = "SMA200"
+        self.ws.cell(row=2, column=43).value = "Volume SMA50"
 
         # ウィンドウ枠の固定
         self.ws.freeze_panes = 'D3'
@@ -2067,6 +2098,6 @@ class ConvertExcel:
         dt_now = datetime.datetime.now()
         date = dt_now.strftime('%y%m%d')
         output_data = os.path.join(
-            glob.glob(os.getcwd()+"/Stock_Trade/ExcelData")[0], f"BuyingStock_{date}.xlsx")
+            glob.glob(os.getcwd()+"/ExcelData")[0], f"BuyingStock_{date}.xlsx")
         wb.save(output_data)
         self.logger.info(f"---Done Process ConvertExcel ---")
