@@ -1522,6 +1522,21 @@ class ConvertExcel:
         wb = openpyxl.load_workbook(df_xlsx_dir)
         self.ws = wb['Sheet1']
 
+        # Ticker 今期EPS、今期収益、来期EPS、来期収益がすべて25%以上
+        ticker_col_num = self.search_col_num(col_name='Ticker')  # Ticker列の列番号
+        fill_color = PatternFill(
+            fgColor='88bfbf', bgColor='88bfbf', fill_type='solid')
+        # ファンダメンタルズに使用する列のみのdf
+        fundamental_list = ['Current Quarter EPS', 'Current Quarter Revenue',
+                            'Next Quarter EPS', 'Next Quarter Revenue']  # 対象列
+        fundamental_df = self.df.loc[:, fundamental_list]
+        # すべての列を判定
+        for i in range(len(fundamental_df)):
+            cell = self.ws.cell(row=i+2, column=ticker_col_num)
+            # すべての列が25以上の場合のみ色を変える
+            if (fundamental_df.iloc[i] >= 25).all():
+                cell.fill = fill_color
+
         # InsiderOwn
         col_num = self.search_col_num(col_name='MarketCap')
         col_num_2 = self.search_col_num(col_name='InsiderOwn')
@@ -1552,7 +1567,7 @@ class ConvertExcel:
             earnings_date = cell.value
             if self.is_within_one_month(earnings_date):
                 fill_color = PatternFill(
-                    fgColor='ffff00', bgColor='ffff00', fill_type='solid')
+                    fgColor='fff352', bgColor='fff352', fill_type='solid')
                 cell.fill = fill_color
 
         # RS
@@ -2032,7 +2047,7 @@ class ConvertExcel:
         # 罫線を引く
         side = Side(style='thick', color='000000')
         border = Border(left=side)
-        border_list = [15, 19, 23, 27, 31, 33, 35, 37, 38, 42]
+        border_list = [15, 19, 23, 27, 31, 33, 35, 37, 38, 43]
         max_row = self.ws.max_row+1
         for i in range(len(border_list)):
             for j in range(2, max_row):

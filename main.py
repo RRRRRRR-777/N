@@ -8,6 +8,7 @@ start = time.time()
 init_process = InitProcess()
 logger = init_process.set_log()
 driver = init_process.set_selenium()
+# ファイルの設定
 init_process.execute()
 # finvizから銘柄の配列を取得 87.18s 1.45m
 pick_finviz = PickFinviz(logger)
