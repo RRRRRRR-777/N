@@ -1,3 +1,12 @@
+---
+name: Question
+about: " 疑問点がある"
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 ## 質問内容
 
 ## 背景
@@ -10,4 +19,4 @@
 - 
 
 ## 備考
-- 
+-

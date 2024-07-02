@@ -1,3 +1,12 @@
+---
+name: Feat
+about: 新機能の作成
+title: ''
+labels: ''
+assignees: RRRRRRR-777
+
+---
+
 ## 概要（目的と理由）
 
 ## 目標（期待される結果）
@@ -14,4 +23,4 @@
 ## 関連するissue
 - 
 ## 備考
-- 
+-
