@@ -1,6 +1,6 @@
 # 使用技術一覧
 ## 言語
-Python 
+Python
 ## ライブラリ
 pandas / numpy / openpyxl / selenium / request / beautifulsoup
 
@@ -16,6 +16,18 @@ pandas / numpy / openpyxl / selenium / request / beautifulsoup
 # ER図
 
 # 実行方法
+## パッケージのインストール
+`conda install --file conda_requirements.txt`<br />
+`pip install -r requirements.txt`
+
+※ anacondaで仮想環境を構築してください <br />[Linuxにanacondaインストールしてパスを通して仮想環境作成](https://qiita.com/lighlighlighlighlight/items/8f624751df808d89d48c)
+## main.pyの実行
+```shell
+cd .
+python main.py
+// python3の場合は
+python3 main.py
+```
 
 # 環境変数
 |役割|変数|値|
