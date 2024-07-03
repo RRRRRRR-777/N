@@ -13,6 +13,7 @@ pandas / numpy / openpyxl / selenium / request / beautifulsoup
 
 # 投資戦略
 
+
 # ER図
 
 # 実行方法
@@ -28,6 +29,41 @@ python main.py
 // python3の場合は
 python3 main.py
 ```
+
+## 各関数の機能
+### InitProcess
+- csvをダウンロードするディレクトリを構成する
+### PickFinviz
+- finvizからティッカーコード、企業名、業種等のデータを取得しinput.txtに出力する
+### HistData
+- input.txtに格納されている銘柄を参照し、それぞれの1970/01/01から本日までのヒストリカルデータを取得しティッカーコード.csvの形式でダウンロードディレクトリに保存する。
+### ProcessNASDAQ
+- NASDAQのヒストリカルデータを取得する
+- ミネルビィ二のトレンドテンプレートに沿った項目を追加する
+
+    ※ [ミネルビィ二のトレンドテンプレートとは](https://investortat.com/apply_trend_template_for_japanese_stocks/)
+- ^IXIC.csvの形式でダウンロードディレクトリに保存する。
+### ProcessHistData
+- 各銘柄にミネルビィ二のトレンドテンプレートに沿った項目を追加する
+- NASDAQのトレンドテンプレートの指標7つの合計の項目を追加する
+- ティッカーコード.csvの形式でダウンロードディレクトリに保存する
+### CalculateRS
+- 各銘柄のRSの素点を計算し、1000銘柄全てと比較したRSの点数の項目を追加する
+- すべての銘柄の最新の値をまとめたComprehensive.csvとして出力する。
+### BuyingStock
+- 購入基準を満たしている銘柄を選出する
+- BuyingStock.csvを出力する
+### CurrentAnnual
+- CANSLIMのC(CureentQuarterlyEarnings)A(AnnualEarningsInvreases)の部分を計算する
+- CourrentAnnual.csvとして出力する。
+### Institutional
+- CANSLIMのI(InstitutionalSponsorship)の部分を取得する。
+- Perf_Inst.csvとして出力する。
+### AppendData
+- BuyingStock.csvに値を追加する
+- 主にCourrentAnnual.csvとPerf_Inst.csvの値をBuyingStock.csvに結合している
+### ConvertExcel
+- Excelに変換後視覚情報を追加
 
 # 環境変数
 |役割|変数|値|
