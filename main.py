@@ -31,10 +31,10 @@ buying_stock.execute()
 # CとAを取得する 1881.23s 31.36m
 current_annual = CurrentAnnual(logger, driver)
 current_annual.execute()
-# 機関投資家の増加数を取得  2345.98s 39.09m, 581.66s 240stocks
+# 機関投資家の増加数を取得  581.66s 9.68m
 institutional = Institutional(logger, driver)
 institutional.execute()
-# BuyingStock.csvに値を追加する 61.6s → 12s
+# BuyingStock.csvに値を追加する 12s
 append_data = AppendData(logger)
 append_data.execute()
 # Excelに変換後視覚情報を調整 47.93s(セルの自動調整追加時)

@@ -35,8 +35,10 @@ from utils import InitProcess
 class PerfInst:
     def __init__(self, logger):
         self.logger = logger
-        load_dotenv()  # .envファイルから値を読み込む
-        self.search_url = "https://13f.info/search?q="
+        dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+        load_dotenv(dotenv_path)  # .envファイルから値を読み込む
+        self.base_url = os.getenv("INSTITUTION_URL")
+        self.search_url = f"{self.base_url}/search?q="
 
     # 検索画面から対象の銘柄のURLを検索する
     def search(self, ticker_code):
@@ -50,7 +52,7 @@ class PerfInst:
             if ticker_code.upper() == a_tag.text.split()[0]:
                 href = a_tag.get('href')
                 if href:
-                    full_url = f"https://13f.info{href}"
+                    full_url = f"{self.base_url}{href}"
                     response = requests.get(full_url)
                     if response.status_code == 200:
                         self.logger.info(f"Successfully accessed {full_url}")
@@ -65,7 +67,7 @@ class PerfInst:
         tbody_tag = soup.find('tbody')
         previous_inst = tbody_tag.find_all('tr')[1].find_all('td')[1].text
         previous_inst_2 = tbody_tag.find_all('tr')[2].find_all('td')[1].text
-        print(f"前期: {inst}, 前々期: {inst2}")
+        print(f"前期: {previous_inst}, 前々期: {previous_inst_2}")
 
     def execute(self):
         ticker_list = ["aapl", "meta", "amzn", "nvda", "tsla", "app", "tko"]
