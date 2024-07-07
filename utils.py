@@ -40,7 +40,7 @@ class InitProcess:
     def set_log(self):
         self.logger = getLogger(__name__)
         load_dotenv()  # .envファイルから値を読み込む
-        log_level = int(os.getenv('output_logger_level'))
+        log_level = int(os.getenv('OUTPUT_LOGGER_LEVEL'))
         # ログレベルを設定
         self.logger.setLevel(log_level)
         # ログをコンソール出力するための設定
@@ -130,7 +130,7 @@ class PickFinviz:
     def execute(self):
         # URL
         load_dotenv()  # .envファイルから値を読み込む
-        url = os.getenv('finviz_url')
+        url = os.getenv('FINVIZ_URL')
         # ページ数(num*20銘柄)
         num = 100
         # ファイル名
@@ -201,7 +201,7 @@ class HistData:
 
         # IXICのヒストリカルデータをダウンロード
         load_dotenv()  # .envファイルから値を読み込む
-        base_url = os.getenv('yfinance_nasdaq_url')
+        base_url = os.getenv('YFINANCE_NASDAQ_URL')
         url = base_url + str(st)+'&period2='+str(ed) + \
             '&interval=1d&events=history&includeAdjustedClose=true'
 
@@ -212,7 +212,7 @@ class HistData:
 
         # 銘柄数の分だけループ
         load_dotenv()  # .envファイルから値を読み込む
-        base_url = os.getenv('yfinance_stocks_url')
+        base_url = os.getenv('YFINANCE_STOCKS_URL')
         for i in range(1, nsym+1):
             url = base_url+str(symbol[i])+'?period1=' + str(st)+'&period2='+str(ed) + \
                 '&interval=1d&events=history&includeAdjustedClose=true'
@@ -733,7 +733,7 @@ class CurrentAnnual:
     def analysts_info(self, ticker_code):
         try:
             load_dotenv()  # .envファイルから値を読み込む
-            base_url = os.getenv('analysts_url')
+            base_url = os.getenv('ANALYSTS_URL')
             url = base_url + f"{ticker_code}/analysis"
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
@@ -755,7 +755,7 @@ class CurrentAnnual:
     def previous_info(self, ticker_code):
         # ターゲットのURL
         load_dotenv()  # .envファイルから値を読み込む
-        base_url = os.getenv('finance_url')
+        base_url = os.getenv('FINANCE_URL')
         url = base_url + f"{ticker_code}"
         try:
             # URLにアクセス
@@ -1033,7 +1033,7 @@ class Institutional:
         try:
             # ターゲットのURL
             load_dotenv()  # .envファイルから値を読み込む
-            url = os.getenv('institute_url')
+            url = os.getenv('INSTITUTE_URL')
             # サイトのホームへ移動
             self.driver.get(url)
             # 各銘柄のページへ移動
@@ -1075,7 +1075,7 @@ class Institutional:
                 # 該当銘柄の企業名で再度検索する
                 # ターゲットのURL
                 load_dotenv()  # .envファイルから値を読み込む
-                url = os.getenv('institute_url')
+                url = os.getenv('INSTITUTE_URL')
                 self.driver.get(url)
                 input_search = self.driver.find_element(
                     By.XPATH, "/html/body/div[1]/div/div/div/div[1]/div/header/div/div[2]/div[1]/div[2]/div/div/div/div[2]/input[1]")
@@ -1143,12 +1143,12 @@ class Institutional:
 
         # 対象リンク
         load_dotenv()  # .envファイルから値を読み込む
-        base_url = os.getenv('institute_url')
+        base_url = os.getenv('INSTITUTE_URL')
         loggin_url = base_url + "/login"
         # ユーザーネーム
-        username = os.getenv("institute_username")
+        username = os.getenv("INSTITUTE_USERNAME")
         # パスワード
-        password = os.getenv("institute_password")
+        password = os.getenv("INSTITUTE_PASSWORD")
         # ドライバの設定
         # txtファイルを用いて処理の実行を100銘柄づつに分ける
         remove_flg = False
@@ -1205,7 +1205,7 @@ class Institutional:
         time.sleep(5)  # 待機時間
         self.logger.info(self.driver.current_url)
         load_dotenv()  # .envファイルから値を読み込む
-        url = os.getenv('institute_url')
+        url = os.getenv('INSTITUTE_URL')
         self.driver.get(url)  # URLを開く
         time.sleep(0.5)
         # 検索をStock Onlyに変更
