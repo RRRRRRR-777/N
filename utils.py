@@ -1387,7 +1387,7 @@ class AppendData:
             perf_inst_df = pd.read_csv(perf_inst_df_dir)
             perf_inst = perf_inst_df[perf_inst_df["Ticker"] == ticker_code]
             df.loc[df["Ticker"] == ticker_code,
-                   "Perf Inst"] = perf_inst["Perf Inst"]
+                   "PerfInst"] = perf_inst["PerfInst"]
 
             # インデックスと個別銘柄を比較
             ticker_dir = glob.glob(

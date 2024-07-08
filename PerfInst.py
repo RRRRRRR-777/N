@@ -54,29 +54,55 @@ class PerfInst:
                 if href:
                     full_url = f"{self.base_url}{href}"
                     response = requests.get(full_url)
-                    if response.status_code == 200:
-                        self.logger.info(f"Successfully accessed {full_url}")
-                    else:
+                    if not response.status_code == 200:
                         self.logger.error(f"Failed to access {full_url}")
                     return response
         self.logger.warning("No matching link found.")
         return None
 
+    # 対象銘柄の機関投資家購入数の前期と前々期を取得
     def getInst(self, ticker_code, response):
-        soup = BeautifulSoup(response.text, "html.parser")
-        tbody_tag = soup.find('tbody')
-        previous_inst = tbody_tag.find_all('tr')[1].find_all('td')[1].text
-        previous_inst_2 = tbody_tag.find_all('tr')[2].find_all('td')[1].text
-        print(f"前期: {previous_inst}, 前々期: {previous_inst_2}")
+        try:
+            soup = BeautifulSoup(response.text, "html.parser")
+            tbody_tag = soup.find('tbody')
+            previous_inst_ = tbody_tag.find_all('tr')[1].find_all('td')[1].text
+            previous_inst = int(previous_inst_.replace("\n", "").replace(",", ""))
+            previous_inst_2_ = tbody_tag.find_all('tr')[2].find_all('td')[1].text
+            previous_inst_2 = int(previous_inst_2_.replace("\n", "").replace(",", ""))
+            return previous_inst, previous_inst_2
+        except Exception as e:
+            self.logger.warning(f"No:{i+1}, Ticker:{ticker_code}, {e}")
+            return None, None
 
     def execute(self):
-        ticker_list = ["aapl", "meta", "amzn", "nvda", "tsla", "app", "tko"]
-        for ticker_code in ticker_list:
+        # 銘柄のリストを読み込む
+        stock_df = pd.read_csv(os.path.join(
+            glob.glob(os.getcwd()+"/CsvData*")[0], "BuyingStock.csv"))
+        stock_df_ticker = stock_df["Ticker"]
+        # 取得したデータを格納する配列
+        data = []
+        for i, ticker_code in enumerate(stock_df_ticker):
+            # 検索画面から対象の銘柄のURLを検索する
             response = self.search(ticker_code)
             if response:
-                self.getInst(ticker_code, response)
+                # 対象銘柄の機関投資家購入数の前期と前々期を取得
+                previous_inst, previous_inst_2 = self.getInst(ticker_code, response)
+                data.append(
+                    [ticker_code, previous_inst, previous_inst_2])
             time.sleep(1.0)
-
+            print(f"Done {i+1}/{len(stock_df_ticker)}", end="\r")
+        # dataをdfに変換する
+        df = pd.DataFrame(data)
+        col = ["Ticker", "PreviousInst", "PreviousInst2"]
+        df.columns = col
+        # 前期と前々期のパフォーマンスを計算
+        performance = (df['PreviousInst'] -
+                       df['PreviousInst2']) / abs(df['PreviousInst2'])
+        df["PerfInst"] = round(performance * 100, 2)
+        # dfをCSV出力する
+        outputDir = os.path.join(
+            glob.glob(os.getcwd()+"/CsvData*")[0], f"PerfInst.csv")
+        df.to_csv(outputDir, index=False)
 
 # インスタンスの作成と実行
 init_process = InitProcess()
