@@ -69,11 +69,9 @@ python3 main.py
 |役割|変数|値|
 |---|---|---|
 |ログの出力設定|OUTPUT_LOGGER_LEVEL|20|
-|finvizのサイトURL|FINVIZ_URL||
-|NASDAQヒストリカルデータのURL|YFINANCE_NASDAQ_URL||
-|各銘柄ヒストリカルデータのURL|YFINANCE_STOCKS_URL||
-|アナリスト情報のURL|ANALYSTS_URL||
-|過去決算情報のURL|FINANCE_URL||
-|機関投資家情報のURL|INSTITUTE_URL||
-|機関投資家情報のURLにアクセスする情報|INSTITUTE_USERNAME||
-|機関投資家情報のURLにアクセスする情報|INSTITUTE_PASSWORD||
+|finvizのサイトURL|FINVIZ_URL|https://finviz.com/screener.ashx?v=152&f=cap_smallover,geo_usa,ind_stocksonly,sh_avgvol_o500&o=-marketcap&c=0,1,2,3,4,6,26,33,68,67,65&r=|
+|NASDAQヒストリカルデータのURL|YFINANCE_NASDAQ_URL|https://query1.finance.yahoo.com/v7/finance/download/^IXIC?period1=|
+|各銘柄ヒストリカルデータのURL|YFINANCE_STOCKS_URL|https://query1.finance.yahoo.com/v7/finance/download/|
+|アナリスト情報のURL|ANALYSTS_URL|https://finance.yahoo.com/quote/|
+|過去決算情報のURL|FINANCE_URL|https://dilutiontracker.com/app/search/|
+|機関投資家情報のURL|INSTITUTE_URL|https://13f.info|
